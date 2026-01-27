@@ -1,0 +1,19 @@
+gradio
+requests
+redis
+beautifulsoup4
+markdownify
+numpy
+schedule
+
+# Hugging Face Related
+huggingface_hub==0.36.0
+datasets==3.0.1
+transformers==4.57.1  
+tokenizers==0.22.1
+torch==2.9.0
+torchao==0.14.1
+accelerate==0.34.2
+
+# ONNX Runtime (reranker model inference)
+onnxruntime==1.19.2

@@ -1,0 +1,8 @@
+pipeline.md
+*.tmp.py
+.vscode/
+app/.git
+project.toml
+app/README.md
+*/.gitattributes
+*/__pycache__/

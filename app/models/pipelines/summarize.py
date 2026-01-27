@@ -1,0 +1,97 @@
+# app/models/pipelines/summarize.py
+from typing import Iterable, Union
+
+from app.models.decoding.engine import DecodingEngine
+from app.models.decoding.modifiers.temperature import TemperatureModifier
+from app.models.decoding.policies.sampling import SamplingPolicy
+from app.models.outputs.sentence import SentenceOutput
+from app.models.pipelines.base import BasePipeline
+from app.models.prompts.mode import apply_mode_prefix
+from app.models.runtime.llm_runtime import LLMRuntime
+
+
+class SummarizePipeline(BasePipeline):
+    """
+    text summarization pipeline.
+
+    Characteristics:
+    - prompt engineering only (no reasoning/controller)
+    - sampling-based decoding
+    - supports streaming
+    """
+
+    name = "summarize"
+
+    def __init__(self, runtime: LLMRuntime):
+        # --- decoding strategy ---
+        policy = SamplingPolicy(
+            top_p=0.9,
+            max_tokens=256,
+        )
+
+        modifiers = [
+            TemperatureModifier(temperature=0.7)
+        ]
+
+        decoding = DecodingEngine(
+            runtime=runtime,
+            decoding_policy=policy,
+            modifiers=modifiers,
+        )
+
+        output_transform = SentenceOutput(runtime=runtime)
+
+        super().__init__(
+            name=self.name,
+            runtime=runtime,
+            decoding=decoding,
+            controller=None,
+            output_transform=output_transform
+        )
+
+    # -------------------------
+    # Public API
+    # -------------------------
+    def run(
+        self,
+        prompt: str,
+        *,
+        mode: str | None = "instruct",
+        max_tokens: int | None = None,
+        stream: bool = False,
+        **kwargs,
+    ) -> Union[str, Iterable[str]]:
+        """
+        Execute generation.
+
+        Args:
+            prompt: raw text prompt
+            mode: prompt mode ("instruct", "think", None)
+            max_tokens: optional override
+            stream: whether to stream output
+        """
+        self._apply_overrides(**kwargs)
+        
+        # 1️ apply mode prefix (string level)
+        prompt = apply_mode_prefix(prompt, mode)
+
+        # 2️ tokenize
+        encoding = self.runtime.tokenize(prompt)
+        input_ids = encoding["input_ids"]
+        attention_mask = encoding.get("attention_mask")
+
+        # 3️ override max_tokens if provided
+        if max_tokens is not None:
+            self.decoding.policy.max_tokens = max_tokens
+
+        # 4️ run decoding
+        result = self.decoding.run(
+            prompt_ids=input_ids,
+            attention_mask=attention_mask,
+            max_tokens=self.decoding.policy.max_tokens,
+            stream=stream,
+        )
+
+        # 5️ return result
+        return result
+
