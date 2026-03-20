@@ -1,11 +1,8 @@
-# 📘 pragmatic-llm-search - mvp
+# 📘 pragmatic-agent
 
-[![HF Space](https://img.shields.io/badge/HF%20Spaces(pragmatic--search)-Live-blue)](https://huggingface.co/spaces/m97j/pragmatic-llm-search)
-[![HF Model](https://img.shields.io/badge/HF%20Model-pragmatic--search-ff69b4)](https://huggingface.co/m97j/pragmatic-search)
-[![Colab](https://img.shields.io/badge/Colab-Notebook-yellow)](https://colab.research.google.com/drive/1FT-PxsCi1FDLMmCELw3S0_gHHNrwNYN0?usp=sharing)
 
 ## Project Overview
-This is an AI search and summary chatbot that provides **real-time search (RAG) + summary + translation** functions based on open-source LLMs for 7B to 14B levels.
+This is an AI search and summary chatbot that provides **real-time search (RAG) + summary + translation** functions based on open-source LLMs for 10B to 20B levels.
 
 - Users ask questions in natural language → the model translates them into search queries → the search results are synthesized to generate answers.
 - Up-to-date information is supplemented with the **Web Search API (Google Custom Search)**.
@@ -13,9 +10,20 @@ This is an AI search and summary chatbot that provides **real-time search (RAG) 
 
 ---
 
+## Technology Stack
+- **Model**
+  - LLM: GPT-OSS 20B
+  - Embedder: bge-small / e5-small
+  - Reranker: monoT5-small / e5-reranker
+- **Framework**: PyTorch, Transformers, TRL
+- **Search**: FAISS + BM25, Google Custom Search API
+- **Serving/Distribution**: Docker, **HF Space**, gradio
+
+---
+
 ## Goals
-1. Aim for large-scale model-level search accuracy with a medium-sized LLM (7B to 14B).
-2. Generate reliable/evidence-rich answers with RAG + RLHF (DPO).
+1. Aim for large-scale model-level search accuracy with a medium-sized LLM.
+2. Generate reliable/evidence-rich answers with RAG.
 3. Ensure up-to-dateness with a real-time search API.
 4. Optimize the prompt system, decoding policy, and RAG context design.
 5. Demonstrate SaaS-based deployment with Hugging Face Space.
@@ -44,16 +52,7 @@ This is an AI search and summary chatbot that provides **real-time search (RAG) 
 
 ---
 
-## Technology Stack
-- **Model**
-  - LLM: Qwen 3 8B (Main LLM, QLoRA SFT + DPO)
-  - Embedder: bge-small / e5-small
-  - Reranker: monoT5-small / e5-reranker
-- **Framework**: PyTorch, Transformers, PEFT, TRL
-- **Search**: FAISS/Weaviate + BM25, Google Custom Search API...
-- **Serving/Distribution**: Docker, **HF Space**, gratio
-
----
-
 ## Demo
-👉[huggingface space](https://huggingface.co/spaces/m97j/pragmatic-llm-search)
+👉[huggingface space](https://huggingface.co/spaces/m97j/pragmatic-agent)
+
+
